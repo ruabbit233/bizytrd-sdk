@@ -6,7 +6,6 @@ import io
 from pathlib import Path
 from typing import Any, Callable
 
-from .adapters import build_payload_for_model as _sdk_build_payload_for_model
 from .config import (
     DEFAULT_API_BASE_URL,
     DEFAULT_MAX_POLLING_TIME,
@@ -82,6 +81,7 @@ class BizyTRDClient:
         self,
         value: Any,
         *,
+        input_name: str = "",
         file_name_prefix: str,
         total_pixels: int = 10000 * 10000,
         max_size: int = 20 * 1024 * 1024,
@@ -100,7 +100,11 @@ class BizyTRDClient:
         handler = self._media_handlers.get("IMAGE")
         if handler:
             return handler(
-                value, file_name_prefix=file_name_prefix, client=self, **kwargs
+                value,
+                input_name=input_name,
+                file_name_prefix=file_name_prefix,
+                client=self,
+                **kwargs,
             )
         raise ValueError(
             f"Cannot handle IMAGE input of type {type(value).__name__}. Register a handler with client.register_media_handler('IMAGE', handler)"
@@ -110,6 +114,7 @@ class BizyTRDClient:
         self,
         value: Any,
         *,
+        input_name: str = "",
         file_name_prefix: str,
         max_size: int = 100 * 1024 * 1024,
         enforce_duration_range: tuple[float, float] | None = None,
@@ -129,6 +134,7 @@ class BizyTRDClient:
         if handler:
             return handler(
                 value,
+                input_name=input_name,
                 file_name_prefix=file_name_prefix,
                 client=self,
                 enforce_duration_range=enforce_duration_range,
@@ -142,6 +148,7 @@ class BizyTRDClient:
         self,
         value: Any,
         *,
+        input_name: str = "",
         file_name_prefix: str,
         format: str = "mp3",
         max_size: int = 50 * 1024 * 1024,
@@ -161,6 +168,7 @@ class BizyTRDClient:
         if handler:
             return handler(
                 value,
+                input_name=input_name,
                 file_name_prefix=file_name_prefix,
                 client=self,
                 format=format,
@@ -192,10 +200,3 @@ class BizyTRDClient:
 
     def poll_task(self, request_id: str) -> dict[str, Any]:
         return _sdk_poll_task(request_id, self._config)
-
-    def build_payload(
-        self, model_def: dict[str, Any], kwargs: dict[str, Any]
-    ) -> dict[str, Any]:
-        return _sdk_build_payload_for_model(
-            model_def, self._config, kwargs, client=self
-        )
