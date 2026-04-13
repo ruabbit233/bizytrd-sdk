@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bizytrd-sdk"
+version = "0.1.0"
+description = "ComfyUI-agnostic SDK for BizyAir TRD task submission and polling"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["requests"]
+
+[tool.setuptools]
+packages = ["bizytrd_sdk", "bizytrd_sdk.adapters"]
+include-package-data = true
+
+[tool.setuptools.exclude-package-data]
+"*" = ["__pycache__/*", "*/__pycache__/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
